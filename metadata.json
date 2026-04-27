@@ -1,0 +1,6 @@
+{
+  "name": "快速备货清单工具",
+  "description": "快速生成可打印的A4横版备货清单，支持预设商品和尺码库，方便仓库高效配货和核对。",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
