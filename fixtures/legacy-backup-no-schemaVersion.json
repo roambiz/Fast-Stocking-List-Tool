@@ -1,0 +1,13 @@
+{
+  "info": {
+    "platform": "烟测-旧版无 schemaVersion",
+    "store": "",
+    "personInCharge": "",
+    "shippingMethod": "",
+    "date": "2026-04-28"
+  },
+  "products": [
+    { "id": "demo-p1", "name": "示例商品", "spu": "DEMO-01", "sizes": ["M", "L"] }
+  ],
+  "stockItems": []
+}
