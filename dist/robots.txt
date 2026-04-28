@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fast-stocking-list.roambiz.com/sitemap.xml

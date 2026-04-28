@@ -7,6 +7,8 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "pack": "npm run clean && vite build && node scripts/pack-extension.mjs",
+    "pack:dist": "npm run clean && vite build && node scripts/pack-dist.mjs",
+    "pack:dev": "powershell -ExecutionPolicy Bypass -File scripts/pack-source-no-docs.ps1",
     "preview": "vite preview",
     "clean": "node scripts/clean.mjs",
     "lint": "tsc --noEmit",
