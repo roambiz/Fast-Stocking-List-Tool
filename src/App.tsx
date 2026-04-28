@@ -7,6 +7,7 @@ import { TableBeautySettings } from './components/TableBeautySettings';
 import { StockList } from './components/StockList';
 import { PrintPreview } from './components/PrintPreview';
 import { ExportOverlay } from './components/ExportOverlay';
+import { ConfirmDialog } from './components/ConfirmDialog';
 import { DocumentInfo, Product, StockItem, DEFAULT_SIZES } from './types';
 import { generateId } from './lib/utils';
 import {
@@ -40,6 +41,21 @@ import { normalizeStockItems } from './lib/stock-layout';
 
 const STORAGE_KEY = 'stock_tool_data';
 
+function createDefaultInfo(): DocumentInfo {
+  const today = new Date().toISOString().split('T')[0];
+  return {
+    platform: '',
+    store: '',
+    personInCharge: '',
+    shippingMethod: '',
+    date: today,
+  };
+}
+
+function createSeedProducts(): Product[] {
+  return [{ id: generateId(), name: '男童针织长裤示例', spu: '示例-01', sizes: DEFAULT_SIZES }];
+}
+
 type EditTabId = 'info' | 'library' | 'list' | 'layout' | 'beauty';
 
 const EDIT_STEPS: { tab: EditTabId; step: number; Icon: LucideIcon; label: string }[] = [
@@ -65,22 +81,15 @@ export default function App() {
   const exportRootRef = useRef<HTMLDivElement>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
 
-  const [info, setInfo] = useState<DocumentInfo>(() => {
-    const today = new Date().toISOString().split('T')[0];
-    return {
-      platform: '',
-      store: '',
-      personInCharge: '',
-      shippingMethod: '',
-      date: today,
-    };
-  });
+  const [info, setInfo] = useState<DocumentInfo>(() => createDefaultInfo());
   const [products, setProducts] = useState<Product[]>([]);
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [exporting, setExporting] = useState(false);
   const [displayPrefs, setDisplayPrefs] = useState<DisplayPreferences>(() => ({
     ...DEFAULT_DISPLAY_PREFS,
   }));
+  const [clearListDialogOpen, setClearListDialogOpen] = useState(false);
+  const [globalResetDialogOpen, setGlobalResetDialogOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -106,7 +115,7 @@ export default function App() {
           setDisplayPrefs({ ...DEFAULT_DISPLAY_PREFS, ...payload.displayPrefs });
         }
       } else {
-        setProducts([{ id: generateId(), name: '男童针织长裤示例', spu: '示例-01', sizes: DEFAULT_SIZES }]);
+        setProducts(createSeedProducts());
       }
     } catch (e) {
       console.error(e);
@@ -128,10 +137,15 @@ export default function App() {
     );
   }, [info, products, stockItems, displayPrefs]);
 
-  const handleClearList = () => {
-    if (confirm('确定要清空当前的备货清单吗？该操作不可恢复。')) {
-      setStockItems([]);
-    }
+  const applyGlobalReset = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    setInfo(createDefaultInfo());
+    setProducts(createSeedProducts());
+    setStockItems([]);
+    setDisplayPrefs({ ...DEFAULT_DISPLAY_PREFS });
+    setActiveTab('edit');
+    setEditTab('info');
+    setGlobalResetDialogOpen(false);
   };
 
   const handleImportJsonFile = async (file: File) => {
@@ -237,6 +251,29 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-zinc-200/50 via-zinc-50 to-white font-sans text-zinc-900">
+      <ConfirmDialog
+        open={clearListDialogOpen}
+        title="清空当前清单？"
+        description="将移除 STEP3 中所有款式；商品库与表头不受影响。此操作不可撤销。"
+        confirmText="清空"
+        cancelText="取消"
+        tone="danger"
+        onCancel={() => setClearListDialogOpen(false)}
+        onConfirm={() => {
+          setStockItems([]);
+          setClearListDialogOpen(false);
+        }}
+      />
+      <ConfirmDialog
+        open={globalResetDialogOpen}
+        title="一键状态重置？"
+        description="将清除本应用在本设备上的全部本地数据（与导出存档无关），并恢复为首次打开：示例商品、空清单、默认表头与美化选项。此操作不可恢复。"
+        confirmText="重置"
+        cancelText="取消"
+        tone="danger"
+        onCancel={() => setGlobalResetDialogOpen(false)}
+        onConfirm={applyGlobalReset}
+      />
       <ExportOverlay show={exporting} />
 
       <header className="no-print sticky top-0 z-10 px-4 pt-4">
@@ -391,20 +428,36 @@ export default function App() {
                   {stockItems.length > 0 && (
                     <button
                       type="button"
-                      onClick={handleClearList}
+                      onClick={() => setClearListDialogOpen(true)}
                       className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                     >
                       清空当前清单
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={() => setGlobalResetDialogOpen(true)}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 py-2 text-sm font-bold text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+                  >
+                    一键状态重置
+                  </button>
                 </div>
               </div>
 
               <div className="bento-main-tile min-w-0 flex-1">
-                {editTab === 'info' && <DocumentInfoForm info={info} onChange={setInfo} />}
-                {editTab === 'library' && <ProductLibrary products={products} setProducts={setProducts} />}
+                {editTab === 'info' && (
+                  <DocumentInfoForm info={info} onChange={setInfo} onResetHeader={() => setInfo(createDefaultInfo())} />
+                )}
+                {editTab === 'library' && (
+                  <ProductLibrary products={products} setProducts={setProducts} onResetLibrary={() => setProducts([])} />
+                )}
                 {editTab === 'list' && (
-                  <StockList products={products} stockItems={stockItems} setStockItems={setStockItems} />
+                  <StockList
+                    products={products}
+                    stockItems={stockItems}
+                    setStockItems={setStockItems}
+                    onResetList={() => setStockItems([])}
+                  />
                 )}
                 {editTab === 'layout' && (
                   <PrintSheetLayoutPanel stockItems={stockItems} setStockItems={setStockItems} />

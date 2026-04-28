@@ -8,9 +8,10 @@ import { ConfirmDialog } from './ConfirmDialog';
 interface Props {
   products: Product[];
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
+  onResetLibrary: () => void;
 }
 
-export function ProductLibrary({ products, setProducts }: Props) {
+export function ProductLibrary({ products, setProducts, onResetLibrary }: Props) {
   const [newProductName, setNewProductName] = useState('');
   const [newProductSpu, setNewProductSpu] = useState('');
   const [newProductSizes, setNewProductSizes] = useState(DEFAULT_SIZES.join(', '));
@@ -19,6 +20,7 @@ export function ProductLibrary({ products, setProducts }: Props) {
     open: false,
     title: '',
   });
+  const [resetLibraryOpen, setResetLibraryOpen] = useState(false);
 
   const handleAdd = () => {
     if (!newProductName.trim()) {
@@ -75,7 +77,16 @@ export function ProductLibrary({ products, setProducts }: Props) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-black tracking-wide text-zinc-900">STEP2 · 商品库</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-black tracking-wide text-zinc-900">STEP2 · 商品库</h2>
+        <button
+          type="button"
+          onClick={() => setResetLibraryOpen(true)}
+          className="shrink-0 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-bold text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+        >
+          重置商品库
+        </button>
+      </div>
 
       <div className="rounded-[var(--radius-bento)] border border-zinc-200/80 bg-zinc-50/80 p-4 shadow-sm">
         <h3 className="mb-3 text-sm font-bold text-zinc-900">新建模板</h3>
@@ -225,6 +236,19 @@ export function ProductLibrary({ products, setProducts }: Props) {
         confirmText="知道了"
         onCancel={() => setDialog({ open: false, title: '' })}
         onConfirm={() => setDialog({ open: false, title: '' })}
+      />
+      <ConfirmDialog
+        open={resetLibraryOpen}
+        title="重置商品库？"
+        description="将清空 STEP2 中所有商品模板（不改动清单与表头）。此操作不可撤销。"
+        confirmText="清空"
+        cancelText="取消"
+        tone="neutral"
+        onCancel={() => setResetLibraryOpen(false)}
+        onConfirm={() => {
+          onResetLibrary();
+          setResetLibraryOpen(false);
+        }}
       />
     </div>
   );

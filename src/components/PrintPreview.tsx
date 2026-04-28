@@ -226,28 +226,28 @@ export function PrintPreview({
         >
           <div className="mb-2 grid min-w-0 shrink-0 grid-cols-6 gap-1 border-b-4 border-black pb-1.5 text-black">
             <div className="flex min-w-0 flex-col">
-              <span className="mb-0.5 text-[9px] font-black leading-none tracking-wide text-black">平台</span>
-              <span className="min-h-[1.1rem] truncate text-[10px] font-bold leading-tight text-black">{info.platform}</span>
+              <span className="mb-0.5 text-[12px] font-black leading-none tracking-wide text-black">平台</span>
+              <span className="min-h-[1.1rem] truncate text-[12px] font-bold leading-tight text-black">{info.platform}</span>
             </div>
             <div className="flex min-w-0 flex-col">
-              <span className="mb-0.5 text-[9px] font-black leading-none tracking-wide text-black">店铺</span>
-              <span className="min-h-[1.1rem] truncate text-[10px] font-bold leading-tight text-black">{info.store}</span>
+              <span className="mb-0.5 text-[12px] font-black leading-none tracking-wide text-black">店铺</span>
+              <span className="min-h-[1.1rem] truncate text-[12px] font-bold leading-tight text-black">{info.store}</span>
             </div>
             <div className="flex min-w-0 flex-col">
-              <span className="mb-0.5 text-[9px] font-black leading-none tracking-wide text-black">负责人</span>
-              <span className="min-h-[1.1rem] truncate text-[10px] font-bold leading-tight text-black">{info.personInCharge}</span>
+              <span className="mb-0.5 text-[12px] font-black leading-none tracking-wide text-black">负责人</span>
+              <span className="min-h-[1.1rem] truncate text-[12px] font-bold leading-tight text-black">{info.personInCharge}</span>
             </div>
             <div className="flex min-w-0 flex-col">
-              <span className="mb-0.5 text-[9px] font-black leading-none tracking-wide text-black">发货方式</span>
-              <span className="min-h-[1.1rem] truncate text-[10px] font-bold leading-tight text-black">{info.shippingMethod}</span>
+              <span className="mb-0.5 text-[12px] font-black leading-none tracking-wide text-black">发货方式</span>
+              <span className="min-h-[1.1rem] truncate text-[12px] font-bold leading-tight text-black">{info.shippingMethod}</span>
             </div>
             <div className="flex min-w-0 flex-col">
-              <span className="mb-0.5 text-[9px] font-black leading-none tracking-wide text-black">日期</span>
-              <span className="min-h-[1.1rem] truncate text-[10px] font-bold leading-tight text-black">{info.date}</span>
+              <span className="mb-0.5 text-[12px] font-black leading-none tracking-wide text-black">日期</span>
+              <span className="min-h-[1.1rem] truncate text-[12px] font-bold leading-tight text-black">{info.date}</span>
             </div>
             <div className="flex min-w-0 flex-col">
-              <span className="mb-0.5 text-[9px] font-black leading-none tracking-wide text-black">页组</span>
-              <span className="min-h-[1.1rem] truncate text-[10px] font-bold tabular-nums leading-tight text-black">
+              <span className="mb-0.5 text-[12px] font-black leading-none tracking-wide text-black">页组</span>
+              <span className="min-h-[1.1rem] truncate text-[12px] font-bold tabular-nums leading-tight text-black">
                 {page.printSheet + 1} / {totalSheets}
               </span>
             </div>

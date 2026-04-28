@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import type { StockItem } from '../types';
-import { maxSlotInSheet, SLOTS_PER_PAGE } from '../lib/stock-layout';
+import {
+  maxSlotInSheet,
+  normalizeStockItems,
+  resetPrintLayoutToSheet0Sequential,
+  SLOTS_PER_PAGE,
+} from '../lib/stock-layout';
+import { ConfirmDialog } from './ConfirmDialog';
 
 function maxSheetIndexInData(items: StockItem[]): number {
   if (items.length === 0) return 0;
@@ -18,6 +24,7 @@ export function PrintSheetLayoutPanel({ stockItems, setStockItems }: Props) {
   const [selectedSheet, setSelectedSheet] = useState(0);
   const [paperIndex, setPaperIndex] = useState(0);
   const [pickedId, setPickedId] = useState<string | null>(null);
+  const [resetLayoutOpen, setResetLayoutOpen] = useState(false);
 
   useEffect(() => {
     setSheetTabCount((c) => Math.max(c, dataMaxSheet + 1));
@@ -115,7 +122,17 @@ export function PrintSheetLayoutPanel({ stockItems, setStockItems }: Props) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-black tracking-wide text-zinc-900">STEP4 · 页组</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-black tracking-wide text-zinc-900">STEP4 · 页组</h2>
+        <button
+          type="button"
+          onClick={() => setResetLayoutOpen(true)}
+          disabled={stockItems.length === 0}
+          className="shrink-0 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-bold text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50 disabled:pointer-events-none disabled:opacity-40"
+        >
+          重置版面槽位
+        </button>
+      </div>
       <p className="text-sm text-zinc-500">
         每组 12 格对应一页 A4。下方列表<strong className="text-blue-700">点选高亮</strong>后，点上方格放入；占格时可<strong>对调</strong>。
       </p>
@@ -257,6 +274,25 @@ export function PrintSheetLayoutPanel({ stockItems, setStockItems }: Props) {
           <p className="py-4 text-center text-sm text-zinc-500">请先在 STEP3 添加款式</p>
         )}
       </div>
+
+      <ConfirmDialog
+        open={resetLayoutOpen}
+        title="重置版面槽位？"
+        description="将所有款式收敛到「页组 1」，并按当前清单顺序依次占 1、2、3… 号位（不删除款式，不减少已新增的页组标签）。"
+        confirmText="重置"
+        cancelText="取消"
+        tone="neutral"
+        onCancel={() => setResetLayoutOpen(false)}
+        onConfirm={() => {
+          setStockItems((items) =>
+            normalizeStockItems(resetPrintLayoutToSheet0Sequential(items)),
+          );
+          setSelectedSheet(0);
+          setPaperIndex(0);
+          setPickedId(null);
+          setResetLayoutOpen(false);
+        }}
+      />
     </div>
   );
 }

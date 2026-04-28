@@ -60,3 +60,8 @@ export function sheetKeysFromItems(items: StockItem[]): number[] {
   const s = new Set(items.map((i) => i.printSheet ?? 0));
   return [...s].sort((a, b) => a - b);
 }
+
+/** 将版面收敛到页组 0：按当前清单顺序依次占 1..n 号位（不改变清单条目本身）。 */
+export function resetPrintLayoutToSheet0Sequential(items: StockItem[]): StockItem[] {
+  return items.map((it, idx) => ({ ...it, printSheet: 0, printSlot: idx + 1 }));
+}

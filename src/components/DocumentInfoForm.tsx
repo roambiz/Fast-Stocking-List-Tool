@@ -1,12 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DocumentInfo } from '../types';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface Props {
   info: DocumentInfo;
   onChange: (info: DocumentInfo) => void;
+  onResetHeader: () => void;
 }
 
-export function DocumentInfoForm({ info, onChange }: Props) {
+export function DocumentInfoForm({ info, onChange, onResetHeader }: Props) {
+  const [resetOpen, setResetOpen] = useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...info, [e.target.name]: e.target.value });
   };
@@ -16,7 +20,16 @@ export function DocumentInfoForm({ info, onChange }: Props) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-black tracking-wide text-zinc-900">STEP1 · 表头</h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-black tracking-wide text-zinc-900">STEP1 · 表头</h2>
+        <button
+          type="button"
+          onClick={() => setResetOpen(true)}
+          className="shrink-0 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-bold text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+        >
+          重置表头
+        </button>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="space-y-4 rounded-[var(--radius-bento)] border border-zinc-200/80 bg-zinc-50/70 p-4 shadow-sm">
@@ -79,6 +92,20 @@ export function DocumentInfoForm({ info, onChange }: Props) {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={resetOpen}
+        title="重置表头？"
+        description="将清空平台、店铺、负责人、发货方式，并把日期设为今天。"
+        confirmText="重置"
+        cancelText="取消"
+        tone="neutral"
+        onCancel={() => setResetOpen(false)}
+        onConfirm={() => {
+          onResetHeader();
+          setResetOpen(false);
+        }}
+      />
     </div>
   );
 }

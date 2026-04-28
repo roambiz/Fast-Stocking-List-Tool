@@ -3,15 +3,18 @@ import { Product, StockItem } from '../types';
 import { generateId } from '../lib/utils';
 import { Plus, Trash2, ArrowUp, ArrowDown } from 'lucide-react';
 import { nextFreeSlot } from '../lib/stock-layout';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface Props {
   products: Product[];
   stockItems: StockItem[];
   setStockItems: React.Dispatch<React.SetStateAction<StockItem[]>>;
+  onResetList: () => void;
 }
 
-export function StockList({ products, stockItems, setStockItems }: Props) {
+export function StockList({ products, stockItems, setStockItems, onResetList }: Props) {
   const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [resetOpen, setResetOpen] = useState(false);
 
   const handleAddStockItem = () => {
     if (!selectedProductId) return;
@@ -84,9 +87,18 @@ export function StockList({ products, stockItems, setStockItems }: Props) {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-black tracking-wide text-zinc-900">
-        STEP3 · 清单（{stockItems.length}）
-      </h2>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-lg font-black tracking-wide text-zinc-900">
+          STEP3 · 清单（{stockItems.length}）
+        </h2>
+        <button
+          type="button"
+          onClick={() => setResetOpen(true)}
+          className="shrink-0 rounded-xl border border-zinc-200 bg-white px-3 py-2 text-xs font-bold text-zinc-700 shadow-sm transition-colors hover:border-zinc-300 hover:bg-zinc-50"
+        >
+          重置清单
+        </button>
+      </div>
 
       <p className="text-sm text-zinc-500">
         版面在 <strong className="text-zinc-800">STEP4</strong>；打印装饰在 <strong className="text-zinc-800">STEP5</strong>。
@@ -196,6 +208,20 @@ export function StockList({ products, stockItems, setStockItems }: Props) {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={resetOpen}
+        title="重置清单？"
+        description="将移除 STEP3 中所有备货款式（商品库与版面设置保留）。此操作不可撤销。"
+        confirmText="清空"
+        cancelText="取消"
+        tone="danger"
+        onCancel={() => setResetOpen(false)}
+        onConfirm={() => {
+          onResetList();
+          setResetOpen(false);
+        }}
+      />
     </div>
   );
 }

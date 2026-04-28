@@ -4,7 +4,7 @@ import type { DocumentInfo, Product, StockItem } from '../types';
 export const ARCHIVE_SCHEMA_VERSION = 2;
 
 /** 与 package.json、扩展 manifest 对齐，迭代时同步 bump */
-export const APP_VERSION_STRING = '1.1.0';
+export const APP_VERSION_STRING = '1.2.0';
 
 export type ExportPreferences = {
   exportPdf: boolean;
